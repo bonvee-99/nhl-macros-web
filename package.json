@@ -1,0 +1,12 @@
+{
+  "name": "macro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && npm run build:cp-public",
+    "build:cp-public": "cp ./public/** dist"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="input-ctn">
+      <div class="row-ctn">
+        <input type="text" id="chosen-team" list="team-list" placeholder="Vancouver Canucks">
+        <datalist id="team-list">
+        </datalist>
+      </div>
+      <div class="row-ctn">
+        <label for="order">Order by</label>
+        <select id="order">
+          <option value=0>last name</option>
+          <option value=1>number</option>
+        </select>
+      </div>
+      <div class="row-ctn">
+        <label for="code">macro code (default is first letter of city)</label>
+        <input id="code" type="text" placeholder="choose v for \v">
+      </div>
+      <button class="gen-btn" onclick="main()">Generate Macros</button>
+    </div>
+
+
+    <textarea id="display-box"></textarea>
+    <button class="copy-btn" onclick="copy_macros()">Copy Text</button>
+    <script src="./index.js"></script>  
+  </body>
+</html>

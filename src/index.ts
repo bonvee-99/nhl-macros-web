@@ -16,37 +16,25 @@ enum Sort {
 
 // ----- ----- -----
 const url = "https://statsapi.web.nhl.com/api/v1/teams";
-
-// default team 
-let chosen_team: string;
-
-// chosen code (default is first letter of team name if not specified)
-let chosen_code: string;
-
-// specifies whether user wants macros ordered (doesn't affect functionality)
-let sort_data: boolean = true;
 // specifies sort type (first name by default)
 let sort_type: Sort = Sort.Name;
-
-function set_chosen_team() {
-  // drop down
-}
 
 // needs to be async?
 async function main() {
   try {
-    let team_data = await get_team_data(chosen_team);
+    let team_data = await get_team_data((<HTMLInputElement>document.getElementById("chosen-team")).value);
 
-    if (sort_data) {
-      sort_players(team_data.players, sort_type);
-    }
+    sort_players(team_data.players, parseInt((<HTMLInputElement>document.getElementById("order")).value));
 
-    let macro_string: string = build_team_macros(team_data, chosen_code);
-    // @ts-ignore
-    document.getElementById("display-box").value = macro_string;
+
+
+    let macro_string: string = build_team_macros(team_data, (<HTMLInputElement>document.getElementById("code")).value);
+
+    (<HTMLInputElement>document.getElementById("display-box")).value = macro_string;
   } catch (error: unknown) {
     console.log(error);
-    alert("error building macros");
+    // @ts-ignore
+    alert(error.message);
   }
 }
 
@@ -99,7 +87,7 @@ function build_team_macros(team_data: any, code: any): string {
   return output_string;
 }
 
-function sort_players(players: any, sort_by: any) {
+function sort_players(players: any, sort_by: Sort) {
   let compare_fn: Function;
   if (sort_by == Sort.Name) {
     compare_fn = (player1: any, player2: any) => {
@@ -115,10 +103,26 @@ function sort_players(players: any, sort_by: any) {
 }
 
 // copies dispalyed macro string to clipboard
-function copy_macros() {
+async function copy_macros() {
   const macro_string = <HTMLInputElement>document.getElementById("display-box");
   if (macro_string) {
-    navigator.clipboard.writeText(macro_string.value);
+    await navigator.clipboard.writeText(macro_string.value);
     alert("copied text to clipboard");
   }
 }
+
+async function build_input_list() {
+  let select_elem = <HTMLElement>document.getElementById("team-list");
+  const teams_response = await fetch(url);
+  const teams_parse_response = await teams_response.json();
+
+  teams_parse_response.teams.forEach((team: any) => {
+
+    let team_elem = document.createElement("option");
+    team_elem.value = team.name;
+    select_elem.appendChild(team_elem);
+  });
+}
+
+build_input_list();
+

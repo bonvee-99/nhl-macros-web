@@ -1,0 +1,65 @@
+* {
+ font-size: 16px;
+}
+
+textarea {
+  display: block;
+  margin: auto;
+  width: 75%;
+  height: 60vh;
+  resize: none;
+  background-color: #f8f8f8;
+  border: 2px solid #ccc;
+  padding: 3em;
+  margin-top: 1em;
+  color: #041C2C;
+}
+
+.copy-btn {
+  display: block;
+  margin: auto;
+  margin-top: 0.5em;
+  border: none;
+  color: #00843D;
+  background-color: white;
+  border: 0.1em solid #00843D;
+  padding: 1em;
+  transition: 0.5s;
+  border-radius: 0.1em;
+}
+
+.copy-btn:hover {
+  background-color: #00843D;
+  color: white;
+}
+
+.gen-btn {
+  display: block;
+  border: none;
+  color: #00205B;
+  background-color: white;
+  border: 0.1em solid #1E417B;
+  padding: 0.5em;
+  transition: 0.5s;
+}
+
+.gen-btn:hover {
+  background-color: #1E417B;
+  color: white;
+  border-radius: 0.1em;
+}
+
+.input-ctn {
+  width: 50%;
+  height: 20vh;
+  margin: auto;
+  margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.row-ctn {
+  display: flex;
+  justify-content: center;
+}
