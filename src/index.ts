@@ -20,8 +20,15 @@ enum Sort {
   Number
 }
 
+interface ApiResponse {
+  statusCode: number,
+  headers: object,
+  body?: string
+}
+
 // ----- ----- -----
-const tmpUrl = "http://localhost:3000";
+const localUrl = "http://localhost:3000";
+const prodUrl = "https://0d27ux40wd.execute-api.us-west-1.amazonaws.com/prod";
 
 // specifies sort type (first name by default)
 let sort_type: Sort = Sort.Name;
@@ -46,11 +53,13 @@ async function main() {
 
 // gets player data for specified NHL team
 async function get_team_data(team: string): Promise<Team> {
-  const teams_response = await fetch(`${tmpUrl}/teams`);
+  const teams_response = await fetch(`${prodUrl}/teams`);
   const teams_parse_response = await teams_response.json();
+  const teams = JSON.parse(teams_parse_response.body); 
 
+  // TODO: this sucks (should cache this on page load)
   let triCode: string | undefined;
-  teams_parse_response.find((t: any) => {
+  teams.find((t: any) => {
     if (t.fullName == team) {
       triCode = t.triCode;
     }
@@ -60,19 +69,17 @@ async function get_team_data(team: string): Promise<Team> {
     throw Error("No team with the given name");
   }
 
-  const players_response = await fetch(`${tmpUrl}/roster/${triCode}`);
-  const players_parse_response = await players_response.json();
+  const players_response = await fetch(`${prodUrl}/roster?tricode=${triCode}`);
+  const players = await players_response.json();
 
-  // players should concat forwards, defensemen, goalies
-  const forwards = players_parse_response.forwards;
-  const defensemen = players_parse_response.defensemen;
-  const goalies = players_parse_response.goalies;
-  const players = [].concat(forwards, defensemen, goalies);
+  const forwards = players.forwards;
+  const defensemen = players.defensemen;
+  const goalies = players.goalies;
+  const all_players = [].concat(forwards, defensemen, goalies);
 
   return {
     name: team,
-    // TODO: fix
-    players
+    players: all_players
   }
 }
 
@@ -126,10 +133,11 @@ async function copy_macros() {
 
 async function build_input_list() {
   let select_elem = <HTMLElement>document.getElementById("team-list");
-  const teams_response = await fetch(`${tmpUrl}/teams`);
+  const teams_response = await fetch(`${prodUrl}/teams`);
   const teams_parse_response = await teams_response.json();
+  const teams = JSON.parse(teams_parse_response.body); 
 
-  teams_parse_response.forEach((team: any) => {
+  teams.forEach((team: any) => {
     let team_elem = document.createElement("option");
     team_elem.value = team.fullName;
     select_elem.appendChild(team_elem);
