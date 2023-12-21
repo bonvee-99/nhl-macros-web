@@ -1,7 +1,6 @@
 # nhl-macros-web
 
-## Overview
-!!!
+## [See live](https://bonvee-nhl-macros.s3.us-west-1.amazonaws.com/dist/index.html)
 
 ## Features
 - select your team, macro symbol, and ordering
