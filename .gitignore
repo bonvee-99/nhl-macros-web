@@ -15,3 +15,7 @@ node_modules/
 
 
 
+
+# Terraform (local only — not tracked)
+terraform/
+*.tsbuildinfo

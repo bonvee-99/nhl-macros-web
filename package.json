@@ -1,16 +1,24 @@
 {
-  "name": "macro",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "nhl-macros-web",
+  "version": "2.0.0",
+  "description": "Generate text-expansion macros for NHL team rosters",
+  "type": "module",
   "scripts": {
-    "build": "tsc && npm run build:cp-public",
-    "build:cp-public": "cp ./public/** dist"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.2",
-    "typescript": "^5.2.2"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
   }
 }

@@ -7,15 +7,18 @@
 - click to copy and you are ready to go!
 
 ## Tech Stack
-- TypeScript, HTML, CSS, AWS
+- React, TypeScript, Vite, AWS (Lambda + API Gateway + S3)
 
-### Setup
-- clone repo
-- run "npm install" in main directory
-- run "npm run build" 
-- open index.html in dist folder to view
-- edit index.ts in src
-- edit index.html or styles.css in public
+### Local development
+- `npm install`
+- `npm run dev` — starts the Vite dev server (hot reload) at http://localhost:5173
+  - The app talks directly to the prod API Gateway, so no local backend is needed.
+
+### Source layout (`src/`)
+- `App.tsx` — UI and state
+- `api.ts` — fetches teams/roster from the API
+- `macros.ts` — sorting + macro-string generation
+- `styles.css` — styling
 
 # installing packages to lambda:
 - mkdir nodejs
@@ -26,5 +29,6 @@
 - zip -r axios.zip nodejs
 
 # deploying
-- make sure URL has correct stage in frontend
-- upload dist to s3 bucket
+- make sure the API URL has the correct stage in `src/api.ts`
+- `npm run build` — outputs the static site to `dist/`
+- upload the contents of `dist/` to the S3 bucket
