@@ -13,6 +13,7 @@ export interface Player {
 export interface Team {
   name: string;
   players: Player[];
+  headCoach?: string;
 }
 
 interface TeamSummary {
@@ -36,8 +37,10 @@ export async function get_team_data(name: string): Promise<Team> {
     throw new Error("No team with the given name");
   }
 
-  const response = await fetch(`${PROD_URL}/roster?tricode=${match.triCode}`);
-  const roster = await response.json();
+  const [roster, headCoach] = await Promise.all([
+    fetch(`${PROD_URL}/roster?tricode=${match.triCode}`).then((r) => r.json()),
+    get_head_coach(match.triCode),
+  ]);
 
   const players: Player[] = [
     ...roster.forwards,
@@ -45,5 +48,20 @@ export async function get_team_data(name: string): Promise<Team> {
     ...roster.goalies,
   ];
 
-  return { name, players };
+  return { name, players, headCoach };
+}
+
+// Fetches the team's current head coach. Non-fatal: returns undefined on any
+// failure so the rest of the macros still generate.
+export async function get_head_coach(triCode: string): Promise<string | undefined> {
+  try {
+    const response = await fetch(`${PROD_URL}/getCoach?tricode=${triCode}`);
+    let parsed = await response.json();
+    // Unwrap if API Gateway passes the lambda's proxy-style response through as-is.
+    if (typeof parsed.body === "string") parsed = JSON.parse(parsed.body);
+    return parsed.headCoach ?? undefined;
+  } catch (err) {
+    console.warn("Failed to load head coach", err);
+    return undefined;
+  }
 }

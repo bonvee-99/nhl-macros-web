@@ -22,6 +22,12 @@ export function build_team_macros(team: Team, code?: string): string {
 
   let output = `${macroCode}\tthe ${team.name}\n\n`;
 
+  if (team.headCoach) {
+    output +=
+      `\n\n${macroCode}hc\tHead coach ${team.headCoach} of the ${team.name}` +
+      `\n${macroCode}${macroCode}hc\t${team.headCoach}`;
+  }
+
   for (const player of team.players) {
     const name = `${player.firstName.default} ${player.lastName.default}`;
     const number = parseInt(player.sweaterNumber);
