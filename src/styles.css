@@ -63,6 +63,13 @@ body {
   backdrop-filter: blur(8px);
 }
 
+/* Cards use backdrop-filter, which gives each its own stacking context.
+   Lift the settings card so the team dropdown draws over the output card. */
+.card-settings {
+  position: relative;
+  z-index: 2;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -80,7 +87,8 @@ body {
   gap: 1rem;
 }
 
-label {
+label,
+.label {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--muted);
@@ -170,7 +178,8 @@ textarea:focus {
   margin-bottom: 0.75rem;
 }
 
-.output-label {
+.output-label,
+.label {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--muted);
@@ -361,4 +370,47 @@ textarea#display-box {
 
 .hint.error {
   color: #ff8a80;
+}
+
+/* --- Segmented control (Order by) ---------------------------------------- */
+
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.segment {
+  flex: 1;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.segment:hover:not(.selected) {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.segment.selected {
+  color: #fff;
+  background: var(--green);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.segment:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
 }

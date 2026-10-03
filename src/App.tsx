@@ -3,6 +3,11 @@ import { get_teams, get_team_data, type TeamSummary } from "./api";
 import { build_team_macros, sort_players, type SortBy } from "./macros";
 import TeamPicker from "./TeamPicker";
 
+const ORDER_OPTIONS: { value: SortBy; label: string }[] = [
+  { value: "name", label: "Last name" },
+  { value: "number", label: "Number" },
+];
+
 export default function App() {
   const [teams, setTeams] = useState<TeamSummary[]>([]);
   const [team, setTeam] = useState<TeamSummary | null>(null);
@@ -54,7 +59,7 @@ export default function App() {
         </p>
       </header>
 
-      <section className="card">
+      <section className="card card-settings">
         <div className="field">
           <label htmlFor="chosen-team">Team</label>
           <TeamPicker teams={teams} value={team} onChange={setTeam} />
@@ -67,15 +72,21 @@ export default function App() {
 
         <div className="field-row">
           <div className="field">
-            <label htmlFor="order">Order by</label>
-            <select
-              id="order"
-              value={order}
-              onChange={(e) => setOrder(e.target.value as SortBy)}
-            >
-              <option value="name">Last name</option>
-              <option value="number">Number</option>
-            </select>
+            <span className="label" id="order-label">Order by</span>
+            <div className="segmented" role="radiogroup" aria-labelledby="order-label">
+              {ORDER_OPTIONS.map((o) => (
+                <button
+                  key={o.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={order === o.value}
+                  className={`segment${order === o.value ? " selected" : ""}`}
+                  onClick={() => setOrder(o.value)}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="field">
