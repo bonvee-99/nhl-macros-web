@@ -195,3 +195,170 @@ textarea#display-box {
     gap: 0;
   }
 }
+
+/* --- Team picker --------------------------------------------------------- */
+
+.team-picker {
+  position: relative;
+}
+
+.team-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: 3rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  text-align: left;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.team-trigger:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.team-trigger:focus-visible,
+.team-trigger.open {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.25);
+}
+
+.team-trigger:disabled {
+  cursor: progress;
+}
+
+.team-trigger .team-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.team-placeholder {
+  flex: 1;
+  color: rgba(155, 176, 193, 0.75);
+}
+
+.chevron {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.team-trigger.open .chevron {
+  transform: rotate(180deg);
+}
+
+.team-logo {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.team-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: var(--navy-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  animation: menu-in 0.12s ease-out;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.team-search {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.8rem 1rem;
+}
+
+.team-search:focus {
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+.team-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  max-height: min(22rem, 55vh);
+  overflow-y: auto;
+}
+
+.team-group {
+  padding: 0.7rem 0.65rem 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.team-option {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.team-option .team-logo {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.team-option .team-name {
+  flex: 1;
+}
+
+.team-option.active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.team-option[aria-selected="true"] .team-name {
+  color: #3ecf7a;
+  font-weight: 600;
+}
+
+.team-code {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.team-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hint.error {
+  color: #ff8a80;
+}

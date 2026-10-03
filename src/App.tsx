@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { get_teams, get_team_data } from "./api";
+import { get_teams, get_team_data, type TeamSummary } from "./api";
 import { build_team_macros, sort_players, type SortBy } from "./macros";
+import TeamPicker from "./TeamPicker";
 
 export default function App() {
-  const [teams, setTeams] = useState<string[]>([]);
-  const [team, setTeam] = useState("");
+  const [teams, setTeams] = useState<TeamSummary[]>([]);
+  const [team, setTeam] = useState<TeamSummary | null>(null);
+  const [teamsError, setTeamsError] = useState(false);
   const [order, setOrder] = useState<SortBy>("name");
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
@@ -14,11 +16,15 @@ export default function App() {
   // Load the team list once on mount to populate the picker.
   useEffect(() => {
     get_teams()
-      .then((list) => setTeams(list.map((t) => t.fullName).sort()))
-      .catch((err) => console.error("Failed to load teams", err));
+      .then(setTeams)
+      .catch((err) => {
+        console.error("Failed to load teams", err);
+        setTeamsError(true);
+      });
   }, []);
 
   async function generate() {
+    if (!team) return;
     setLoading(true);
     try {
       const data = await get_team_data(team);
@@ -51,19 +57,12 @@ export default function App() {
       <section className="card">
         <div className="field">
           <label htmlFor="chosen-team">Team</label>
-          <input
-            id="chosen-team"
-            list="team-list"
-            placeholder="Pick a team"
-            autoComplete="off"
-            value={team}
-            onChange={(e) => setTeam(e.target.value)}
-          />
-          <datalist id="team-list">
-            {teams.map((t) => (
-              <option key={t} value={t} />
-            ))}
-          </datalist>
+          <TeamPicker teams={teams} value={team} onChange={setTeam} />
+          {teamsError && (
+            <span className="hint error">
+              Couldn't load teams. Refresh the page to try again.
+            </span>
+          )}
         </div>
 
         <div className="field-row">

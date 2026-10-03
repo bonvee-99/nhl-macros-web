@@ -1,4 +1,4 @@
-// GET /getCoach?tricode=VAN -> { headCoach: "Adam Foote" }
+// GET /coach?tricode=VAN -> { headCoach: "Adam Foote" }
 // The NHL roster endpoint doesn't include coaches, but each game's right-rail
 // does. So we find the team's most recent finished game and read it from there.
 // Uses the built-in fetch (Node 18+), so no axios layer is needed.

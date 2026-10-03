@@ -1,8 +1,10 @@
 // API layer for the NHL macros app.
-// Talks to the prod API Gateway directly — CORS is enabled there, so this
-// works the same in local dev and in the deployed S3 build.
+// Defaults to the prod API Gateway (output `api_url` from infra/). Set
+// VITE_API_URL to point elsewhere, e.g. `npm run dev:local` uses the local API.
 
-const PROD_URL = "https://0d27ux40wd.execute-api.us-west-1.amazonaws.com/prod";
+const API_URL =
+  import.meta.env.VITE_API_URL ??
+  "https://enrv4o2ij1.execute-api.us-west-1.amazonaws.com";
 
 export interface Player {
   sweaterNumber: string;
@@ -16,30 +18,26 @@ export interface Team {
   headCoach?: string;
 }
 
-interface TeamSummary {
+export interface TeamSummary {
   fullName: string;
   triCode: string;
+  logo: string;
+  division: string;
+  conference: string;
 }
 
-// Fetches the full list of teams (used for the team picker).
+// Fetches the current 32 teams (used for the team picker).
 export async function get_teams(): Promise<TeamSummary[]> {
-  const response = await fetch(`${PROD_URL}/teams`);
-  const parsed = await response.json();
-  // The lambda returns a proxy-style response with a JSON string `body`.
-  return JSON.parse(parsed.body) as TeamSummary[];
+  const response = await fetch(`${API_URL}/teams`);
+  if (!response.ok) throw new Error(`Failed to load teams (HTTP ${response.status})`);
+  return (await response.json()) as TeamSummary[];
 }
 
-// Fetches roster data for a team given its full display name.
-export async function get_team_data(name: string): Promise<Team> {
-  const teams = await get_teams();
-  const match = teams.find((t) => t.fullName === name);
-  if (!match) {
-    throw new Error("No team with the given name");
-  }
-
+// Fetches roster data and head coach for the given team.
+export async function get_team_data(team: TeamSummary): Promise<Team> {
   const [roster, headCoach] = await Promise.all([
-    fetch(`${PROD_URL}/roster?tricode=${match.triCode}`).then((r) => r.json()),
-    get_head_coach(match.triCode),
+    fetch(`${API_URL}/roster?tricode=${team.triCode}`).then((r) => r.json()),
+    get_head_coach(team.triCode),
   ]);
 
   const players: Player[] = [
@@ -48,17 +46,15 @@ export async function get_team_data(name: string): Promise<Team> {
     ...roster.goalies,
   ];
 
-  return { name, players, headCoach };
+  return { name: team.fullName, players, headCoach };
 }
 
 // Fetches the team's current head coach. Non-fatal: returns undefined on any
 // failure so the rest of the macros still generate.
 export async function get_head_coach(triCode: string): Promise<string | undefined> {
   try {
-    const response = await fetch(`${PROD_URL}/getCoach?tricode=${triCode}`);
-    let parsed = await response.json();
-    // Unwrap if API Gateway passes the lambda's proxy-style response through as-is.
-    if (typeof parsed.body === "string") parsed = JSON.parse(parsed.body);
+    const response = await fetch(`${API_URL}/coach?tricode=${triCode}`);
+    const parsed = await response.json();
     return parsed.headCoach ?? undefined;
   } catch (err) {
     console.warn("Failed to load head coach", err);

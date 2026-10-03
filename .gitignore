@@ -11,11 +11,4 @@ npm-debug.log*
 dist/
 node_modules/
 .DS_Store
-
-
-
-
-
-# Terraform (local only — not tracked)
-terraform/
 *.tsbuildinfo
