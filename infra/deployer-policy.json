@@ -66,11 +66,21 @@
         "apigateway:POST",
         "apigateway:PUT",
         "apigateway:PATCH",
-        "apigateway:DELETE",
-        "apigateway:TagResource",
-        "apigateway:UntagResource"
+        "apigateway:DELETE"
       ],
       "Resource": "arn:aws:apigateway:us-west-1::*"
+    },
+    {
+      "Sid": "Budget",
+      "Effect": "Allow",
+      "Action": [
+        "budgets:ViewBudget",
+        "budgets:ModifyBudget",
+        "budgets:ListTagsForResource",
+        "budgets:TagResource",
+        "budgets:UntagResource"
+      ],
+      "Resource": "arn:aws:budgets::396112019419:budget/nhl-macros-*"
     },
     {
       "Sid": "SiteBucket",

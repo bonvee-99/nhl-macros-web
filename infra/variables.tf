@@ -19,3 +19,20 @@ variable "allowed_origins" {
     "http://localhost:5173",
   ]
 }
+
+variable "lambda_max_concurrency" {
+  description = "Reserved concurrency per Lambda (max simultaneous runs)."
+  type        = number
+  default     = 5
+}
+
+variable "monthly_budget_usd" {
+  description = "Monthly AWS spend (account-wide) that triggers a billing alert."
+  type        = string
+  default     = "5"
+}
+
+variable "budget_alert_email" {
+  description = "Where billing alerts go. Set in terraform.tfvars (gitignored)."
+  type        = string
+}

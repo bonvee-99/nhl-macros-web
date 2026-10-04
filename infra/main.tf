@@ -57,6 +57,9 @@ resource "aws_lambda_function" "fn" {
   memory_size      = 256
   timeout          = lookup(each.value, "timeout", 5)
 
+  # Hard cap on simultaneous runs per function, independent of API Gateway throttling.
+  reserved_concurrent_executions = var.lambda_max_concurrency
+
   depends_on = [aws_cloudwatch_log_group.fn, aws_iam_role_policy_attachment.lambda_logs]
 }
 
@@ -79,10 +82,11 @@ resource "aws_apigatewayv2_stage" "default" {
   name        = "$default"
   auto_deploy = true
 
-  # Keep a public, unauthenticated API from running up a bill.
+  # Keep a public, unauthenticated API from running up a bill. A page load makes
+  # ~3 requests, so this is plenty for real users.
   default_route_settings {
-    throttling_burst_limit = 20
-    throttling_rate_limit  = 10
+    throttling_burst_limit = 10
+    throttling_rate_limit  = 3
   }
 }
 
@@ -108,4 +112,32 @@ resource "aws_lambda_permission" "api" {
   function_name = aws_lambda_function.fn[each.key].function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.api.execution_arn}/*/*"
+}
+
+# --- Billing alert ---------------------------------------------------------
+# Account-wide: emails when actual spend passes 80% of the budget, or when AWS
+# forecasts the month will go over it. Alerts only; nothing is shut off.
+
+resource "aws_budgets_budget" "monthly" {
+  name         = "${var.name}-monthly"
+  budget_type  = "COST"
+  limit_amount = var.monthly_budget_usd
+  limit_unit   = "USD"
+  time_unit    = "MONTHLY"
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = 80
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "ACTUAL"
+    subscriber_email_addresses = [var.budget_alert_email]
+  }
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = 100
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "FORECASTED"
+    subscriber_email_addresses = [var.budget_alert_email]
+  }
 }
